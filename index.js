@@ -1,11 +1,39 @@
 const http = require("http");
+const https = require("https");
 const url = require("url");
 const StringDecoder = require("string_decoder").StringDecoder;
 const config = require("./config");
+const fs = require("fs");
 
-//creating a server
+//instantiating the http server
 
-var server = http.createServer(function (req, res) {
+var httpServer = http.createServer(function (req, res) {
+   unifiedServer(req,res);
+});
+
+//starting the http server 
+
+httpServer.listen(config.httpPort, function (req, res) {
+   console.log("listening on port "+ config.httpPort + " in " + config.envName + " mode ");
+});
+
+var httpsServerOptions = {
+    'key' : fs.readFileSync("./ssl/key.pem"),
+    'cert' : fs.readFileSync("./ssl/cert.pem")
+}
+
+// Instantiating a https server
+var httpsServer = https.createServer(httpsServerOptions,function(req,res){
+   unifiedServer(req,res);
+});
+
+
+//starting the https server 
+httpsServer.listen(config.httpsPort, function (req, res) {
+   console.log("listening on port "+ config.httpsPort + " in " + config.envName + " mode ");
+});
+
+var unifiedServer = function(req,res){
    var parsedURL = url.parse(req.url, true);
    var pathName = parsedURL.pathname;
    var trimmedPath = pathName.replace(/^\/+|\/+$/g, '');
@@ -46,16 +74,7 @@ var server = http.createServer(function (req, res) {
       });
 
    });
-
-});
-
-
-
-//starting the server and listening on port 3000
-
-server.listen(config.port, function (req, res) {
-   console.log("listening on port "+ config.port + " in " + config.envName + " mode ");
-});
+}
 
 var handlers = {};
 handlers.sample = function (data, callback) {

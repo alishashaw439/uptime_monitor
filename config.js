@@ -1,23 +1,25 @@
 //exporting only that environment which is passed through command line
 
 
-var environment = {}
+var environments = {}
 
-environment.staging = {
-    "port" : 3000,
+environments.staging = {
+    "httpPort" : 3000,
+    "httpsPort" : 3001,
     "envName" : "staging"
 }
 
-environment.production = {
-    "port" : 5000,
+environments.production = {
+    "httpPort" : 5000,
+    "httpsPort" : 5001,
     "envName" : "production"
 }
 
 //getting the environment from command line
-var currentEnvironment = typeof(process.env.NODE_ENV) == 'string' ? process.env.NODE_ENV : "";
+var currentEnvironment = typeof(process.env.NODE_ENV) == 'string' ? process.env.NODE_ENV.toLowerCase() : "";
 
 //exporting the environment, setting staging as default
-var environmentToExport = typeof(environment[currentEnvironment]) == 'object' ? environment[currentEnvironment] : staging;
+var environmentToExport = typeof(environments[currentEnvironment]) == 'object' ? environments[currentEnvironment] : environments.staging;
 
 
 module.exports = environmentToExport;
